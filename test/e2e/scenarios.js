@@ -14,15 +14,16 @@ describe('PhoneCat App', function() {
         query     = element(by.model('query'));
 
 
+
     it('should filter the phone list as a user types into the search box', function() {
-      expect(phoneList.count()).toBe(4);
+      expect(phoneList.count()).toBe(20);
 
       query.sendKeys('nexus');
       expect(phoneList.count()).toBe(1);
 
       query.clear();
       query.sendKeys('yadda');
-      expect(phoneList.count()).toBe(1);
+      expect(phoneList.count()).toBe(0);
 
     });
 
@@ -34,10 +35,11 @@ describe('PhoneCat App', function() {
       expect(browser.getTitle()).toMatch(/Google Phone Gallery: Nexus$/);
     });
 
-    it('should be possible to control phone order via the drop down select box', function() {
 
+
+
+    it('should be possible to control phone order via the drop down select box', function() {
       var phoneNameColumn = element.all(by.repeater('phone in phones').column('phone.name'));
-      var query = element(by.model('query'));
 
       function getNames() {
         return phoneNameColumn.map(function(elm) {
@@ -45,20 +47,31 @@ describe('PhoneCat App', function() {
         });
       }
 
-      query.sendKeys('iphone'); //let's narrow the dataset to make the test assertions shorter
+      query.sendKeys('tablet'); //let's narrow the dataset to make the test assertions shorter
 
       expect(getNames()).toEqual([
-        'Apple iPhone 6', 
-        'Apple iPhone 5S'
+        "Motorola XOOM\u2122 with Wi-Fi",
+        "MOTOROLA XOOM\u2122"
       ]);
 
       element(by.model('orderProp')).element(by.css('option[value="name"]')).click();
 
       expect(getNames()).toEqual([
-        'Apple iPhone 5S',
-        'Apple iPhone 6'
+        "MOTOROLA XOOM\u2122",
+        "Motorola XOOM\u2122 with Wi-Fi"
       ])
     });
+
+
+
+
+    it('should render phone-specific links', function() {
+      query.sendKeys("nexus");
+      element.all(by.css('.phones li a')).first().click();
+      browser.getLocationAbsUrl().then(function(url) {
+        expect(url.split('#')[1]).toBe('/phones/nexus-s');
+      });
+    })
 
   });
 
